@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لـ رنوشة ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* إعدادات الصفحة الأساسية لمنع أي حركة أو هزة */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            /* الخلفية تظهر بالكامل */
+            background-image: url('background.jpg');
+            background-size: 100% 100%; 
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden; /* لمنع ظهور شريط التمرير والهزة */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000; /* لون احتياطي */
+        }
+
+        /* حاوية القلوب المتساقطة */
+        #hearts-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            bottom: -10%;
+            font-size: 24px;
+            animation: floatUp 5s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
+            100% { transform: translateY(-110vh) scale(1.5); opacity: 0; }
+        }
+
+        /* المربع الزجاجي الرومانسي */
+        .glass-box {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        /* زر معرفة الباسورد اللي فوق */
+        #hint-btn {
+            background: linear-gradient(45deg, #ff4081, #ff79a1);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-family: inherit;
+            cursor: pointer;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+            transition: transform 0.3s;
+        }
+        #hint-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* منطقة العداد */
+        #timer-area {
+            display: none;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        #timer {
+            font-size: 30px;
+            font-weight: bold;
+            color: #ffeb3b;
+            margin: 10px 0;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+        }
+
+        #revealed-password {
+            display: none;
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ffcc;
+            text-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc;
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            from { text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc; }
+            to { text-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc; }
+        }
+
+        /* قسم إدخال الباسورد */
+        h2 {
+            margin-bottom: 15px;
+            font-size: 22px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+        input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #submit-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #ff4081;
+            border: none;
+            padding: 10px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        #submit-btn:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+
+        #error-msg {
+            color: #ffcccc;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الأغنية (تأكد من وجود ملف song.mp3 في نفس المجلد) -->
+    <audio id="bg-music" src="song.mp3" loop></audio>
+
+    <!-- حاوية تأثيرات القلوب -->
+    <div id="hearts-container"></div>
+
+    <!-- المربع الأساسي -->
+    <div class="glass-box">
+        
+        <!-- زر معرفة الباسورد -->
+        <button id="hint-btn">لمعرفه الباسورد دوسي هنا</button>
+
+        <!-- منطقة العداد -->
+        <div id="timer-area">
+            <p id="wait-msg">استني الوقت يخلص وهقولك...</p>
+            <div id="timer">01:30</div>
+            <div id="revealed-password">الباسورد هو: 1613</div>
+        </div>
+
+        <!-- إدخال الباسورد -->
+        <h2>دخلي الباسورد يا رنوشه ❤️</h2>
+        <input type="password" id="password-input" placeholder="الباسورد هنا...">
+        <button id="submit-btn">دخول</button>
+        <p id="error-msg">الباسورد غلط، حاولي تاني يا حبيبتي!</p>
+
+    </div>
+
+    <script>
+        // تشغيل الأغنية مع أول لمسة للصفحة
+        let isMusicPlaying = false;
+        document.body.addEventListener('click', function() {
+            if (!isMusicPlaying) {
+                const music = document.getElementById('bg-music');
+                music.play().catch(e => console.log("تحتاج لتفاعل المستخدم أولاً"));
+                isMusicPlaying = true;
+            }
+        });
+
+        // تأثير القلوب المتساقطة
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            document.getElementById('hearts-container').appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 6000);
+        }
+        setInterval(createHeart, 500); // قلب جديد كل نص ثانية
+
+        // منطق العداد
+        const hintBtn = document.getElementById('hint-btn');
+        const timerArea = document.getElementById('timer-area');
+        const timerDisplay = document.getElementById('timer');
+        const waitMsg = document.getElementById('wait-msg');
+        const revealedPassword = document.getElementById('revealed-password');
+        
+        hintBtn.addEventListener('click', function() {
+            // إخفاء الزر وإظهار منطقة العداد
+            hintBtn.style.display = 'none';
+            timerArea.style.display = 'block';
+
+            // دقيقة ونص = 90 ثانية
+            let timeLeft = 90; 
+
+            const countdown = setInterval(function() {
+                timeLeft--;
+                
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                
+                // تنسيق الوقت عشان يظهر 01:05 مثلاً
+                if (minutes < 10) minutes = "0" + minutes;
+                if (seconds < 10) seconds = "0" + seconds;
+                
+                timerDisplay.textContent = minutes + ":" + seconds;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    timerDisplay.style.display = 'none';
+                    waitMsg.style.display = 'none';
+                    // إظهار الباسورد بالتأثير المضيء
+                    revealedPassword.style.display = 'block';
+                }
+            }, 1000);
+        });
+
+        // التحقق من الباسورد وتحويل الصفحة
+        const submitBtn = document.getElementById('submit-btn');
+        const passwordInput = document.getElementById('password-input');
+        const errorMsg = document.getElementById('error-msg');
+
+        submitBtn.addEventListener('click', function() {
+            if (passwordInput.value === '1613') {
+                // لو الباسورد صح، يحولها لصفحة hj.html
+                window.location.href = 'hj.html';
+            } else {
+                // لو غلط يظهر رسالة الخطأ
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
